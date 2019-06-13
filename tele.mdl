@@ -1,0 +1,66 @@
+constants shiny_purple 0.3 0.2 0.8 0.3 0 0 0.3 0.2 0.8
+constants shiny_teal 0.3 0.0 0.0 0.3 0.2 0.8 0.3 0.2 0.8
+constants dull_yellow 0.3 0.8 0.2 0.3 0.8 0.2 0 0 0
+
+push
+move 250 50 0
+
+//HEAD
+push
+push
+scale 1.5 1 1
+sphere shiny_purple 0 45 0 50
+scale 1.05 1.8 1
+sphere shiny_purple 0 -85 0 100
+pop
+sphere shiny_purple 0 150 0 100
+sphere 0 150 50 75
+push
+scale 1.5 1 1
+sphere 0 150 108 20
+pop
+pop
+
+//ANTENNA
+push
+rotate y 30
+box shiny_purple -10 300 0 20 50 10
+pop
+
+//DONUT
+push
+move 0 320 0
+rotate x 90
+torus shiny_purple 0 0 0 20 30
+pop
+
+//LEFT EAR
+push
+move -100 150 0
+rotate x -30
+rotate z 15
+scale 0.9 1.75 1
+sphere shiny_purple 0 0 0 35
+push
+scale 1 1.3 1
+rotate z -15
+sphere -20 -20 30 20
+pop
+pop
+
+//RIGHT EAR
+push
+move 100 150 0
+rotate x -20
+rotate z -15
+scale 0.9 1.75 1
+sphere shiny_purple 0 0 0 35
+push
+scale 1 1.3 1
+rotate z -15
+sphere 20 -5 30 20
+pop
+pop
+
+display
+save tele.png
