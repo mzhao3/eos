@@ -147,6 +147,10 @@ def run(filename):
                         args[0], args[1], args[2],
                         args[3], args[4], args[5])
                 matrix_mult( stack[-1], tmp )
+                gouraud(tmp, screen, zbuffer, view, ambient, light, symbols, reflect)
+
+                print(tmp)
+
                 draw_polygons(tmp, screen, zbuffer, view, ambient, light, symbols, reflect)
                 tmp = []
                 reflect = '.white'
@@ -165,6 +169,7 @@ def run(filename):
                 add_torus(tmp,
                           args[0], args[1], args[2], args[3], args[4], step_3d)
                 matrix_mult( stack[-1], tmp )
+
                 draw_polygons(tmp, screen, zbuffer, view, ambient, light, symbols, reflect)
                 tmp = []
                 reflect = '.white'

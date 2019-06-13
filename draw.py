@@ -36,15 +36,15 @@ def add_mesh(polygons, filename):
             v2 = vertices[vert_ind[2]]
             #print((v0, v1, v2))
 
-            
+
             if len(vert_ind) == 4:
                 v3 = vertices[vert_ind[3]]
                 add_polygon(polygons, v0[0], v0[1], v0[2], v1[0], v1[1], v1[2], v2[0], v2[1], v2[2])
                 add_polygon(polygons, v0[0], v0[1], v0[2], v2[0], v2[1], v2[2], v3[0], v3[1], v3[2])
             if len(vert_ind) == 3:
                 add_polygon(polygons, v0[0], v0[1], v0[2], v1[0], v1[1], v1[2], v2[0], v2[1], v2[2])
-            
-            
+
+
 
 def draw_scanline(x0, z0, x1, z1, y, screen, zbuffer, color):
     if x0 > x1:

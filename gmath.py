@@ -40,7 +40,7 @@ def get_lighting(normal, view, ambient, light, symbols, reflect ):
     limit_color(i)
 
     return i
-    
+
 
 def calculate_ambient(alight, reflect):
     a = [0, 0, 0]
@@ -120,21 +120,21 @@ def calculate_normal(polygons, i):
 
 def add_vector(v0, v1):
     return [v0[0] + v1[0],
-            v0[1] + v1[1],   
+            v0[1] + v1[1],
             v0[2] + v1[2] ]
 
 def vertex_normal(polygons):
     vertices = {}
-    for i in polygons:
-        for vertex in i:
-            if not vertices[vertex]:
-                vertices[vertex].append(calculate_normal(polygons, i))
-            else:
-                add_vector(vertices[vertex], calculate_normal(polygons, i))
+    for i in range(len(polygons), -2):
+        h = tuple(polygons[i])
+        print(h)
+        if h not in vertices:
+            vertices[h] = (calculate_normal(polygons, i))
+        else:
+            add_vector(vertices[h], calculate_normal(polygons, i))
 
     for j in range(len(vertices)):
         vect = vertices[j]
         vertices[j] = normalize(vect)
-
+    print(vertices)
     return vertices
-    
