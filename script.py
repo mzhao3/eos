@@ -149,7 +149,7 @@ def run(filename):
                 matrix_mult( stack[-1], tmp )
                 gouraud(tmp, screen, zbuffer, view, ambient, light, symbols, reflect)
 
-                print(tmp)
+                #print(tmp)
 
                 draw_polygons(tmp, screen, zbuffer, view, ambient, light, symbols, reflect)
                 tmp = []

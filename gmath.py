@@ -1,4 +1,4 @@
-import math
+﻿import math
 from display import *
 
 
@@ -124,17 +124,18 @@ def add_vector(v0, v1):
             v0[2] + v1[2] ]
 
 def vertex_normal(polygons):
+    #print(polygons)
     vertices = {}
-    for i in range(len(polygons), -2):
+    for i in range(len(polygons) -2):
         h = tuple(polygons[i])
-        print(h)
+        #print("h")
+        #print(h)
         if h not in vertices:
             vertices[h] = (calculate_normal(polygons, i))
         else:
             add_vector(vertices[h], calculate_normal(polygons, i))
-
-    for j in range(len(vertices)):
-        vect = vertices[j]
-        vertices[j] = normalize(vect)
     print(vertices)
+    for j in vertices:
+        normalize(vertices[j])
+    #print(vertices)
     return vertices
