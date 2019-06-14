@@ -1,6 +1,12 @@
+shading phong
 move 250 250 0
+scale 0.5 0.5 1
 rotate y 30
-rotate x 30
-//mesh :gourd
-box -100 125 50 200 250 100
+//rotate x 30
+mesh :teddy
+//box -100 125 50 200 250 100
+//sphere 0 0 0 75
+//torus 0 0 0 20 30
+save_coord_system germ
+
 save sample.png

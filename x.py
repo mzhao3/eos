@@ -16,9 +16,9 @@ def add_mesh(polygons, filename):
         # v x y z [w]
         if parse[0] == "v":
             if len(parse) == 4:
-                vertices.append([10 * float(coord) for coord in parse[1:]])
+                vertices.append([100 * float(coord) for coord in parse[1:]])
             if len(parse) == 5:
-                vertices.append([10 * float(coord) for coord in parse[1:-1]])
+                vertices.append([100 * float(coord) for coord in parse[1:-1]])
         #print(vertices)
         # polygonal face elements
         # f v/vt/vn v/vt/vn v/vt/vn
@@ -44,85 +44,8 @@ def add_mesh(polygons, filename):
             if len(vert_ind) == 3:
                 add_polygon(polygons, v0[0], v0[1], v0[2], v1[0], v1[1], v1[2], v2[0], v2[1], v2[2])
             
-def gouraud(polygons, screen, zbuffer, view, ambient, light, symbols, reflect):
-    if len(polygons) < 2:
-        print 'Need at least 3 points to draw'
-        return
+            
 
-
-    BOT = 0
-    TOP = 2
-    MID = 1
-
-    i = 0
-    vert_normals = vertex_normal(polygons)
-    while i < len(polygons):
-        normal = calculate_normal(polygons, i)[:]
-
-        #print normal
-        if normal[2] > 0:
-            flip = False
-
-            points = [ (polygons[i][0], polygons[i][1], polygons[i][2]),
-                   (polygons[i+1][0], polygons[i+1][1], polygons[i+1][2]),
-                   (polygons[i+2][0], polygons[i+2][1], polygons[i+2][2]) ]
-
-
-            points.sort(key = lambda x: x[1])
-
-            x0 = points[BOT][0]
-            z0 = points[BOT][2]
-            x1 = points[BOT][0]
-            z1 = points[BOT][2]
-            y = int(points[BOT][1])
-
-            distance0 = int(points[TOP][1]) - y * 1.0 + 1
-            distance1 = int(points[MID][1]) - y * 1.0 + 1
-            distance2 = int(points[TOP][1]) - int(points[MID][1]) * 1.0 + 1
-
-            #print(vert_normals)
-            normal0 = vert_normals[tuple(points[0])]
-            normal1 = vert_normals[tuple(points[1])]
-            normal2 = vert_normals[tuple(points[2])]
-
-            rgb0 = get_lighting(normal0, view, ambient, light, symbols, reflect )
-            rgb1 = get_lighting(normal1, view, ambient, light, symbols, reflect )
-            rgb2 = get_lighting(normal2, view, ambient, light, symbols, reflect )
-
-            color0 = rgb0[:]
-            color1 = rgb0[:]
-
-            cdiff0 = [((rgb2[w]-rgb0[w])/ distance0 if distance0 != 0 else 0) for w in range(3)]
-            cdiff1 = [((rgb1[w]-rgb0[w])/ distance1 if distance1 != 0 else 0) for w in range(3)]
-            cdiff2 = [((rgb2[w]-rgb1[w])/ distance2 if distance2 != 0 else 0) for w in range(3)]
-            dx0 = (points[TOP][0] - points[BOT][0]) / distance0 if distance0 != 0 else 0
-            dz0 = (points[TOP][2] - points[BOT][2]) / distance0 if distance0 != 0 else 0
-            dx1 = (points[MID][0] - points[BOT][0]) / distance1 if distance1 != 0 else 0
-            dz1 = (points[MID][2] - points[BOT][2]) / distance1 if distance1 != 0 else 0
-
-            while y <= int(points[TOP][1]):
-
-                if ( not flip and y >= int(points[MID][1])):
-                    flip = True
-                    color1 = rgb1[:]
-                    cdiff1 = cdiff2[:]
-
-                    dx1 = (points[TOP][0] - points[MID][0]) / distance2 if distance2 != 0 else 0
-                    dz1 = (points[TOP][2] - points[MID][2]) / distance2 if distance2 != 0 else 0
-                    x1 = points[MID][0]
-                    z1 = points[MID][2]
-
-                draw_scanline_new(int(x0), z0, int(x1), z1, y, screen, zbuffer, 0, color0, color1, view, ambient, light, symbols, reflect, 'gouraud')
-                color0 = [color0[w] + cdiff0[w] for w in range(3)]
-                color1 = [color1[w] + cdiff1[w] for w in range(3)]
-
-                x0+= dx0
-                z0+= dz0
-                x1+= dx1
-                z1+= dz1
-                y+= 1
-
-        i += 3
 
 def draw_scanline_new(x0, z0, x1, z1, y, screen, zbuffer, color, n0, n1, view, ambient, light, symbols, reflect, shade_type):
     if x0 > x1: 
@@ -152,87 +75,7 @@ def draw_scanline_new(x0, z0, x1, z1, y, screen, zbuffer, color, n0, n1, view, a
         plot(screen, zbuffer, color, int(x), int(y), z)
         x+= 1
         z+= delta_z
-        z+= delta_z
-def phong(polygons, screen, zbuffer, view, ambient, light, symbols, reflect):
-    if len(polygons) < 2:
-        print 'Need at least 3 points to draw'
-        return
-
-
-    BOT = 0
-    TOP = 2
-    MID = 1
-
-    i = 0
-    vert_normals = vertex_normal(polygons)
-    while i < len(polygons):
-        normal = calculate_normal(polygons, i)[:]
-
-        #print normal
-        if normal[2] > 0:
-            flip = False
-
-            points = [ (polygons[i][0], polygons[i][1], polygons[i][2]),
-                   (polygons[i+1][0], polygons[i+1][1], polygons[i+1][2]),
-                   (polygons[i+2][0], polygons[i+2][1], polygons[i+2][2]) ]
-
-
-            points.sort(key = lambda x: (x[1], x[0]))
-
-            x0 = points[BOT][0]
-            z0 = points[BOT][2]
-            x1 = points[BOT][0]
-            z1 = points[BOT][2]
-            y = int(points[BOT][1])
-
-            distance0 = int(points[TOP][1]) - y * 1.0 + 1
-            distance1 = int(points[MID][1]) - y * 1.0 + 1
-            distance2 = int(points[TOP][1]) - int(points[MID][1]) * 1.0 + 1
-
-            normal0 = vert_normals[tuple(points[0])]
-            normal1 = vert_normals[tuple(points[1])]
-            normal2 = vert_normals[tuple(points[2])]
-
-            n0=normal0[:]
-            n1=normal0[:]
-
-            vdiff0 = [((normal2[w]-normal0[w])/ distance0 if distance0 != 0 else 0) for w in range(3)]
-            vdiff1 = [((normal1[w]-normal0[w])/ distance1 if distance1 != 0 else 0) for w in range(3)]
-            vdiff2 = [((normal2[w]-normal1[w])/ distance2 if distance2 != 0 else 0) for w in range(3)]
-
-            dx0 = (points[TOP][0] - points[BOT][0]) / distance0 if distance0 != 0 else 0
-            dz0 = (points[TOP][2] - points[BOT][2]) / distance0 if distance0 != 0 else 0
-            dx1 = (points[MID][0] - points[BOT][0]) / distance1 if distance1 != 0 else 0
-            dz1 = (points[MID][2] - points[BOT][2]) / distance1 if distance1 != 0 else 0
-
-            while y <= int(points[TOP][1]):
-
-                if ( not flip and y >= int(points[MID][1])):
-                    flip = True
-                    n1 = normal1[:]
-                    vdiff1 = vdiff2[:]
-
-                    dx1 = (points[TOP][0] - points[MID][0]) / distance2 if distance2 != 0 else 0
-                    dz1 = (points[TOP][2] - points[MID][2]) / distance2 if distance2 != 0 else 0
-                    x1 = points[MID][0]
-                    z1 = points[MID][2]
-
-                #draw_line(int(x0), y, z0, int(x1), y, z1, screen, zbuffer, color)
-                
-                #draw_scanline_phong(int(x0), z0, int(x1), z1, y, screen, zbuffer, n0, n1, view, ambient, light, symbols, reflect)
-                draw_scanline_new(int(x0), z0, int(x1), z1, y, screen, zbuffer, 0, n0, n1, view, ambient, light, symbols, reflect, 'phong')
-                n0 = [n0[w] + vdiff0[w] for w in range(3)]
-                n1 = [n1[w] + vdiff1[w] for w in range(3)]
-
-                x0+= dx0
-                z0+= dz0
-                x1+= dx1
-                z1+= dz1
-                y+= 1
-
-        i += 3
-
-
+        
 def scanline_convert(polygons, i, screen, zbuffer, color):
     flip = False
     BOT = 0
@@ -268,19 +111,16 @@ def scanline_convert(polygons, i, screen, zbuffer, color):
             x1 = points[MID][0]
             z1 = points[MID][2]
 
-        draw_scanline_new(x0, z0, x1, z1, y, screen, zbuffer, color, 0, 0, 0, 0, 0, 0, 0, 'flat')
+        #draw_line(int(x0), y, z0, int(x1), y, z1, screen, zbuffer, color)
+        #draw_scanline(int(x0), z0, int(x1), z1, y, screen, zbuffer, color)
+        #draw_scanline_new(x0, z0, x1, z1, y, screen, zbuffer, color, n0, n1, view, ambient, light, symbols, reflect, shade_type)
+        draw_scanline_new(x0, z0, x1, z1, y, screen, zbuffer, color, None, None, None, None, None, None, None, "flat")
         x0+= dx0
         z0+= dz0
         x1+= dx1
         z1+= dz1
         y+= 1
 
-
-
-def add_polygon( polygons, x0, y0, z0, x1, y1, z1, x2, y2, z2 ):
-    add_point(polygons, x0, y0, z0)
-    add_point(polygons, x1, y1, z1)
-    add_point(polygons, x2, y2, z2)
 
 def draw_polygons( polygons, screen, zbuffer, view, ambient, light, symbols, reflect):
     if len(polygons) < 2:
@@ -300,15 +140,109 @@ def draw_polygons( polygons, screen, zbuffer, view, ambient, light, symbols, ref
             
         point+= 3
 
-def foo(polygons, screen, zbuffer, view, ambient, light, symbols, reflect, shade_type):
-
-    if (shade_type == 'flat'):
-        draw_polygons( polygons, screen, zbuffer, view, ambient, light, symbols, reflect)
-    if (shade_type == 'gouraud'):
-        gouraud( polygons, screen, zbuffer, view, ambient, light, symbols, reflect)
-    if (shade_type == 'phong'):
-        phong( polygons, screen, zbuffer, view, ambient, light, symbols, reflect)
         
+def foo(polygons, screen, zbuffer, view, ambient, light, symbols, reflect, shade_type):
+    if len(polygons) < 2:
+        print 'Need at least 3 points to draw'
+        return
+    
+    BOT = 0
+    TOP = 2
+    MID = 1
+
+    i = 0
+    vert_normals = vertex_normal(polygons)
+    while i < len(polygons):
+        normal = calculate_normal(polygons, i)[:]
+        
+        if normal[2] > 0:
+            flip = False
+
+            points = [ (polygons[i][0], polygons[i][1], polygons[i][2]),
+                   (polygons[i+1][0], polygons[i+1][1], polygons[i+1][2]),
+                   (polygons[i+2][0], polygons[i+2][1], polygons[i+2][2]) ]
+            
+ 
+            if (shade_type == 'phong'):
+                points.sort(key = lambda x: (x[1], x[0]))
+            else:
+                points.sort(key = lambda x: x[1])
+            x0 = points[BOT][0]
+            z0 = points[BOT][2]
+            x1 = points[BOT][0]
+            z1 = points[BOT][2]
+            y = int(points[BOT][1])
+                
+            
+            distance0 = int(points[TOP][1]) - y * 1.0 + 1
+            distance1 = int(points[MID][1]) - y * 1.0 + 1
+            distance2 = int(points[TOP][1]) - int(points[MID][1]) * 1.0 + 1
+
+            normal0 = vert_normals[tuple(points[0])]
+            normal1 = vert_normals[tuple(points[1])]
+            normal2 = vert_normals[tuple(points[2])]
+            
+            if (shade_type == 'flat'):
+                v0, v1 = 0, 0
+            if (shade_type == 'gouraud'):
+                rgb0 = get_lighting(normal0, view, ambient, light, symbols, reflect )
+                rgb1 = get_lighting(normal1, view, ambient, light, symbols, reflect )
+                rgb2 = get_lighting(normal2, view, ambient, light, symbols, reflect )
+
+                v0 = rgb0[:]
+                v1 = rgb0[:]
+
+                diff0 = [((rgb2[w]-rgb0[w])/ distance0 if distance0 != 0 else 0) for w in range(3)]
+                diff1 = [((rgb1[w]-rgb0[w])/ distance1 if distance1 != 0 else 0) for w in range(3)]
+                diff2 = [((rgb2[w]-rgb1[w])/ distance2 if distance2 != 0 else 0) for w in range(3)]
+                
+            if (shade_type == 'phong'):
+                v0=normal0[:]
+                v1=normal0[:]
+
+                diff0 = [((normal2[w]-normal0[w])/ distance0 if distance0 != 0 else 0) for w in range(3)]
+                diff1 = [((normal1[w]-normal0[w])/ distance1 if distance1 != 0 else 0) for w in range(3)]
+                diff2 = [((normal2[w]-normal1[w])/ distance2 if distance2 != 0 else 0) for w in range(3)]
+        
+            color = get_lighting(normal, view, ambient, light, symbols, reflect )
+
+            dx0 = (points[TOP][0] - points[BOT][0]) / distance0 if distance0 != 0 else 0
+            dz0 = (points[TOP][2] - points[BOT][2]) / distance0 if distance0 != 0 else 0
+            dx1 = (points[MID][0] - points[BOT][0]) / distance1 if distance1 != 0 else 0
+            dz1 = (points[MID][2] - points[BOT][2]) / distance1 if distance1 != 0 else 0
+            
+            while y <= int(points[TOP][1]):
+                if ( not flip and y >= int(points[MID][1])):
+                    flip = True
+                    if (shade_type == 'gouraud'):
+                        v1 = rgb1[:]
+                    if (shade_type == 'phong'):
+                        v1 = normal1[:]
+                    
+
+                    dx1 = (points[TOP][0] - points[MID][0]) / distance2 if distance2 != 0 else 0
+                    dz1 = (points[TOP][2] - points[MID][2]) / distance2 if distance2 != 0 else 0
+                    x1 = points[MID][0]
+                    z1 = points[MID][2]
+                draw_scanline_new(int(x0), z0, int(x1), z1, y, screen, zbuffer, color, v0, v1, view, ambient, light, symbols, reflect, shade_type)
+                if (shade_type != 'flat'):
+                    diff1 = diff2[:]
+                    v0 = [v0[w] + diff0[w] for w in range(3)]
+                    v1 = [v1[w] + diff1[w] for w in range(3)]
+                x0+= dx0
+                z0+= dz0
+                x1+= dx1
+                z1+= dz1
+                y+= 1
+
+        i += 3
+
+
+def add_polygon( polygons, x0, y0, z0, x1, y1, z1, x2, y2, z2 ):
+    add_point(polygons, x0, y0, z0)
+    add_point(polygons, x1, y1, z1)
+    add_point(polygons, x2, y2, z2)
+
 
 def add_box( polygons, x, y, z, width, height, depth ):
     x1 = x + width
@@ -593,3 +527,4 @@ def draw_line( x0, y0, z0, x1, y1, z1, screen, zbuffer, color ):
         z+= dz
         loop_start+= 1
     plot( screen, zbuffer, color, x, y, z )
+

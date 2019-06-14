@@ -22,6 +22,7 @@ def first_pass( commands ):
 
     name = ''
     num_frames = 1
+    shade_type = 'flat'
 
     vary_here = False
     name_here = False
@@ -35,6 +36,8 @@ def first_pass( commands ):
             name_here = True
         if (command['op'] == 'vary'):
             vary_here = True
+        if (command['op'] == 'shading'):
+            shade_type = command['shade_type']
 
     if (vary_here and not frames_here):
         print("No frames provided.")
@@ -42,7 +45,7 @@ def first_pass( commands ):
     if (frames_here and not name_here):
         name = 'default'
         print("No name provided. Using 'default' for base name.")
-    return (name, num_frames)
+    return (name, num_frames, shade_type)
 
 """======== second_pass( commands ) ==========
 
@@ -113,8 +116,9 @@ def run(filename):
                           'green': [0.2, 0.5, 0.5],
                           'blue': [0.2, 0.5, 0.5]}]
     reflect = '.white'
+    shade_type = 'flat'
     #print(commands)
-    (name, num_frames) = first_pass(commands)
+    (name, num_frames, shade_type) = first_pass(commands)
     frames = second_pass(commands, num_frames)
     print(frames)
 
@@ -147,11 +151,9 @@ def run(filename):
                         args[0], args[1], args[2],
                         args[3], args[4], args[5])
                 matrix_mult( stack[-1], tmp )
-                gouraud(tmp, screen, zbuffer, view, ambient, light, symbols, reflect)
+                foo(tmp, screen, zbuffer, view, ambient, light, symbols, reflect, shade_type)
+                #phong(tmp, screen, zbuffer, view, ambient, light, symbols, reflect)
 
-                #print(tmp)
-
-                draw_polygons(tmp, screen, zbuffer, view, ambient, light, symbols, reflect)
                 tmp = []
                 reflect = '.white'
             elif c == 'sphere':
@@ -160,7 +162,9 @@ def run(filename):
                 add_sphere(tmp,
                            args[0], args[1], args[2], args[3], step_3d)
                 matrix_mult( stack[-1], tmp )
-                draw_polygons(tmp, screen, zbuffer, view, ambient, light, symbols, reflect)
+                #phong(tmp, screen, zbuffer, view, ambient, light, symbols, reflect)
+
+                foo(tmp, screen, zbuffer, view, ambient, light, symbols, reflect, shade_type)
                 tmp = []
                 reflect = '.white'
             elif c == 'torus':
@@ -169,8 +173,9 @@ def run(filename):
                 add_torus(tmp,
                           args[0], args[1], args[2], args[3], args[4], step_3d)
                 matrix_mult( stack[-1], tmp )
+                foo(tmp, screen, zbuffer, view, ambient, light, symbols, reflect, shade_type)
+                #phong(tmp, screen, zbuffer, view, ambient, light, symbols, reflect)
 
-                draw_polygons(tmp, screen, zbuffer, view, ambient, light, symbols, reflect)
                 tmp = []
                 reflect = '.white'
             elif c == 'line':
@@ -207,9 +212,15 @@ def run(filename):
 
                 add_mesh(tmp, args[0])
                 matrix_mult( stack[-1], tmp )
-                draw_polygons(tmp, screen, zbuffer, view, ambient, light, symbols, reflect)
+                foo(tmp, screen, zbuffer, view, ambient, light, symbols, reflect, shade_type)
+                #phong(tmp, screen, zbuffer, view, ambient, light, symbols, reflect)
                 tmp = []
                 reflect = '.white'
+#            elif c == 'shading':
+#                shade_type = command['shade_type']
+            elif c == 'save_coord_system':
+                symbols[command['cs']][1] = stack[-1]
+                print(symbols['germ'][1])
             elif c == 'push':
                 stack.append([x[:] for x in stack[-1]] )
                 print(stack)

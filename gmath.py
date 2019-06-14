@@ -1,5 +1,6 @@
-﻿import math
+import math
 from display import *
+from collections import defaultdict
 
 
   # IMPORANT NOTE
@@ -90,7 +91,7 @@ def normalize(vector):
                            vector[1] * vector[1] +
                            vector[2] * vector[2])
     for i in range(3):
-        vector[i] = vector[i] / magnitude
+        vector[i] = vector[i] / magnitude if magnitude != 0 else 0
 
 #Return the dot porduct of a . b
 def dot_product(a, b):
@@ -122,20 +123,50 @@ def add_vector(v0, v1):
     return [v0[0] + v1[0],
             v0[1] + v1[1],
             v0[2] + v1[2] ]
-
+'''
 def vertex_normal(polygons):
     #print(polygons)
     vertices = {}
-    for i in range(len(polygons) -2):
-        h = tuple(polygons[i])
+    for i in range(len(polygons)-2):
+        h = tuple(polygons[i][:-1])
         #print("h")
         #print(h)
         if h not in vertices:
             vertices[h] = (calculate_normal(polygons, i))
         else:
             add_vector(vertices[h], calculate_normal(polygons, i))
-    print(vertices)
+    #print(vertices)
     for j in vertices:
         normalize(vertices[j])
     #print(vertices)
     return vertices
+'''
+def vertex_normal(polygons):
+    L = defaultdict(list)
+    i = 0
+    #each tuple has >= 1 element, which contains a normal
+    while i < len(polygons) - 2:
+        K = calculate_normal(polygons,i)
+        #print("before K", K)
+        normalize(K)
+        #print("normalized K", K)
+        L[tuple(polygons[i][0:3])].append(K)
+        L[tuple(polygons[i+1][0:3])].append(K)
+        L[tuple(polygons[i+2][0:3])].append(K)
+        i += 3
+        
+    P = defaultdict(list)
+    for vertex in L:
+        #vertex is of the form (a,b,c,1.0)
+        #print(vertex)
+        #print(L[k])
+        length = len(L[vertex])
+        totalsum = [0,0,0]
+        for normal in L[vertex]:
+            #print(i)
+            totalsum = [totalsum[0] + normal[0], totalsum[1] + normal[1], totalsum[2] + normal[2] ]
+        P[vertex] = [totalsum[0]/length, totalsum[1]/length, totalsum[2]/length]
+        normalize(P[vertex])
+        #print(P[vertex])
+    return P
+        
